@@ -39,7 +39,7 @@ choice are installed. The Crypto Gameplan plugins are for Claude Code, so they c
 | Node.js | | yes |
 | uv and Python | | yes |
 | Docker Desktop | | optional |
-| Plugin CGP Essentials (cgp-knowledge, cgp-challenge, cgp-natural-writing, cgp-agent-docs, cgp-research, cgp-test-first, cgp-architecture, cgp-review) | yes | yes |
+| Plugin CGP Essentials (cgp-knowledge, cgp-challenge, cgp-natural-writing, cgp-agent-docs, cgp-research, cgp-test-first, cgp-architecture, cgp-review, cgp-docker) | yes | yes |
 | Plugin CGP Effort | | yes |
 | Plugin CGP Crew | | yes |
 | Plugin Blast Radius | yes | yes |
