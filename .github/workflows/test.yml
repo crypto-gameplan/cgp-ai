@@ -20,10 +20,10 @@ jobs:
 
   macos:
     runs-on: macos-latest
-    env:
-      CGP_AI_HOME: ${{ runner.temp }}/cgp-ai
     steps:
       - uses: actions/checkout@v4
+      - name: Keep the saved selection inside the runner's temp folder
+        run: echo "CGP_AI_HOME=$RUNNER_TEMP/cgp-ai" >> "$GITHUB_ENV"
       - name: Plan for both profiles
         run: |
           bin/cgp-ai setup --profile starter --dry-run
