@@ -1,6 +1,6 @@
 # cgp-ai
 
-Sets up an AI work environment on a Mac with one command: the Claude and Codex apps, their command line tools,
+Sets up an AI work environment on a Mac with one command: the Claude and ChatGPT apps (ChatGPT includes Codex), the Claude Code and Codex command line tools,
 Node.js, Python, Docker and the Crypto Gameplan plugins for Claude Code. You pick a profile, see what is already
 there and what is missing, and nothing is installed until you confirm. Windows follows.
 
@@ -28,7 +28,7 @@ The installer downloads the latest release into `~/.cgp-ai/app`, adds the `cgp-a
 |---|---|---|
 | Git | yes | yes |
 | Claude Desktop | yes | yes |
-| Codex App | yes | yes |
+| ChatGPT Desktop (with Codex) | yes | yes |
 | Claude Code CLI | for the plugins | yes |
 | Codex CLI | | yes |
 | Node.js | | yes |

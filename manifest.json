@@ -30,15 +30,15 @@
       }
     },
     {
-      "id": "codex-app",
-      "name": "Codex App",
-      "description": "OpenAI Codex as a desktop app",
+      "id": "chatgpt-desktop",
+      "name": "ChatGPT Desktop",
+      "description": "ChatGPT and Codex in one desktop app",
       "kind": "app",
       "self_updates": true,
       "mac": {
         "method": "brew-cask",
-        "package": "codex-app",
-        "app": "Codex.app"
+        "package": "chatgpt",
+        "app": "ChatGPT.app"
       }
     },
     {
@@ -149,7 +149,7 @@
       "tools": [
         "git",
         "claude-desktop",
-        "codex-app"
+        "chatgpt-desktop"
       ],
       "plugins": [
         "cgp-essentials"
@@ -162,7 +162,7 @@
       "tools": [
         "git",
         "claude-desktop",
-        "codex-app",
+        "chatgpt-desktop",
         "claude-code",
         "codex-cli",
         "node",

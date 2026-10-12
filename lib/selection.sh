@@ -71,7 +71,8 @@ RESOLVED_TOOLS=""
 _resolve_add() {
   local r
   in_list "$1" "$RESOLVED_TOOLS" && return
-  tool "$1" id >/dev/null || die "manifest: unknown tool '$1'"
+  # A tool removed or renamed in a newer manifest may still be in an old selection.
+  tool "$1" id >/dev/null || { warn "'$1' is no longer offered and is skipped"; return; }
   for r in $(tool_requires "$1"); do _resolve_add "$r"; done
   RESOLVED_TOOLS=$(add_line "$RESOLVED_TOOLS" "$1")
 }
