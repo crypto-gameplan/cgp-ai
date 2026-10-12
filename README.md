@@ -38,7 +38,7 @@ choice are installed. The Crypto Gameplan plugins are for Claude Code, so they c
 | Codex CLI | yes | yes |
 | Node.js | | yes |
 | uv and Python | | yes |
-| Docker Desktop | | yes |
+| Docker Desktop | | optional |
 | Plugin CGP Essentials (cgp-knowledge, cgp-challenge, cgp-natural-writing, cgp-agent-docs, cgp-research, cgp-test-first, cgp-architecture, cgp-review) | yes | yes |
 | Plugin CGP Effort | | yes |
 | Plugin CGP Crew | | yes |
@@ -46,21 +46,22 @@ choice are installed. The Crypto Gameplan plugins are for Claude Code, so they c
 
 Starter gives you the desktop apps and both AI command line tools, so `claude` and `codex` work in any terminal; you
 never have to open one if you do not want to. Builder adds what you need to build agents, scripts and your own
-projects. Custom asks about each item. The Claude Code CLI is always installed when you choose plugins, because Claude
+projects. Docker Desktop is optional there: Builder asks whether you want it (default no), because it is large and
+only needed if you run containers; `--with docker-desktop` takes it without asking. Custom asks about each item. The Claude Code CLI is always installed when you choose plugins, because Claude
 Code installs plugins through it. Homebrew is installed first if it is missing.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `cgp-ai setup` | Shows the plan, installs what is missing and walks you through signing in. The first run asks for your AI and profile; later runs reuse them. `--change` asks again, `--ai claude\|openai\|both` and `--profile starter\|builder\|custom` skip the questions, `--dry-run` changes nothing, `--yes` skips the confirmation and the sign-ins. |
+| `cgp-ai setup` | Shows the plan, installs what is missing and walks you through signing in. The first run asks for your AI and profile; later runs reuse them. `--change` asks again, `--ai claude\|openai\|both` and `--profile starter\|builder\|custom` skip the questions, `--with docker-desktop` adds Docker to Builder without asking, `--dry-run` changes nothing, `--yes` skips the confirmation and the sign-ins. |
 | `cgp-ai update` | Upgrades the tools that do not update themselves and the plugins. Apps and the Claude Code CLI update themselves and are left alone. |
 | `cgp-ai doctor` | Checks everything without changing anything: missing tools, the same command installed twice, sign-ins, Docker not started, missing plugins. Each finding comes with a fix. |
 
 ## Signing in
 
 After installing, the setup goes through every app and tool that needs you: it starts the sign-in of the Claude Code
-and Codex command line tools, opens Claude Desktop, ChatGPT Desktop and Docker Desktop, and waits until you are done.
+and Codex command line tools, opens Claude Desktop, ChatGPT Desktop and, if you chose it, Docker Desktop, and waits until you are done.
 It ends with **All set** only when everything is installed and signed in; otherwise it lists what is still open, and
 running `cgp-ai setup` again continues there.
 

@@ -225,7 +225,9 @@
         "codex-cli",
         "node",
         "uv",
-        "python",
+        "python"
+      ],
+      "optional_tools": [
         "docker-desktop"
       ],
       "plugins": [

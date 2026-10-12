@@ -7,6 +7,7 @@
 
 SELECTION_FILE="$CGP_HOME/selection"
 SEL_PROVIDER=""; SEL_PROFILE=""; SEL_TOOLS=""; SEL_PLUGINS=""; SEL_CONFIRMED=""
+SEL_WITH=""   # optional tools asked for with --with, so they are not asked again
 
 in_list() { printf '%s\n' "$2" | grep -qx "$1"; }
 add_line() { if [ -z "$1" ]; then printf '%s' "$2"; else printf '%s\n%s' "$1" "$2"; fi; }
@@ -68,6 +69,21 @@ sel_from_profile() {
   SEL_PROFILE=$1
   SEL_TOOLS=$(_only_wanted_tools "$(profile_tools "$1")")
   SEL_PLUGINS=$(_only_wanted_plugins "$(profile_plugins "$1")")
+  _ask_optional "$1"
+}
+
+# Optional tools of a profile: asked one by one, no by default. --yes skips them unless --with names them.
+_ask_optional() {
+  local id asked=0
+  for id in $(profile_optional "$1"); do
+    tool_wanted "$id" || continue
+    if in_list "$id" "$SEL_WITH"; then
+      SEL_TOOLS=$(add_line "$SEL_TOOLS" "$id")
+    elif [ "${CGP_ASSUME_YES:-0}" != "1" ]; then
+      [ "$asked" = "1" ] || { heading "Optional for $(profile "$1" name)"; asked=1; }
+      ask_yn "  $(tool "$id" name): $(tool "$id" description)?" n && SEL_TOOLS=$(add_line "$SEL_TOOLS" "$id")
+    fi
+  done
 }
 
 # Asks for every tool and plugin of the chosen AI, pre-selecting what the starter profile has.

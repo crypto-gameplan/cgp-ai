@@ -32,6 +32,8 @@ cmd_setup() {
       --profile=*) want_profile=${1#--profile=} ;;
       --ai) shift; want_provider=${1:-} ;;
       --ai=*) want_provider=${1#--ai=} ;;
+      --with) shift; SEL_WITH=$(add_line "$SEL_WITH" "${1:-}") ;;
+      --with=*) SEL_WITH=$(add_line "$SEL_WITH" "${1#--with=}") ;;
       *) die "Unknown option '$1'. See: cgp-ai help" ;;
     esac
     shift
@@ -54,6 +56,9 @@ cmd_setup() {
     elif [ -n "$want_profile" ]; then sel_from_profile "$want_profile"
     else sel_ask_profile; fi
   fi
+  for id in $SEL_WITH; do
+    in_list "$id" "$SEL_TOOLS" || warn "--with $id does not fit this selection and is ignored"
+  done
   sel_resolve
 
   # Plan

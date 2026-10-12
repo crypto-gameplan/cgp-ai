@@ -37,6 +37,7 @@ profile() { local i; i=$(_index profiles "$1") || return 1; m_get "profiles.$i.$
 
 tool_requires()    { local i; i=$(_index tools "$1") || return 1; m_list "tools.$i.requires"; }
 profile_tools()    { local i; i=$(_index profiles "$1") || return 1; m_list "profiles.$i.tools"; }
+profile_optional() { local i; i=$(_index profiles "$1") || return 1; m_list "profiles.$i.optional_tools"; }
 profile_plugins()  { local i; i=$(_index profiles "$1") || return 1; m_list "profiles.$i.plugins"; }
 plugin_requires()  { m_list plugin_requires; }
 

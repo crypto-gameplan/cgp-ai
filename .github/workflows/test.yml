@@ -29,7 +29,8 @@ jobs:
           for ai in claude openai both; do
             bin/cgp-ai setup --ai "$ai" --profile starter --dry-run
           done
-          bin/cgp-ai setup --ai both --profile builder --dry-run
+          bin/cgp-ai setup --ai both --profile builder --dry-run --yes
+          bin/cgp-ai setup --ai both --profile builder --with docker-desktop --dry-run --yes
       - name: Doctor without a selection reports it and fails
         run: |
           if bin/cgp-ai doctor; then echo "doctor should fail without a selection"; exit 1; fi

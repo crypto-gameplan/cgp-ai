@@ -38,7 +38,7 @@ usage() {
 cgp-ai $(cgp_version): your AI work environment, set up and kept current.
 
 Usage:
-  cgp-ai setup [--ai claude|openai|both] [--profile starter|builder|custom] [--change] [--dry-run] [--yes]
+  cgp-ai setup [--ai claude|openai|both] [--profile starter|builder|custom] [--with docker-desktop] [--change] [--dry-run] [--yes]
   cgp-ai update [--yes]
   cgp-ai doctor
   cgp-ai version
@@ -46,7 +46,8 @@ Usage:
 setup   Asks which AI you use and which profile you want, shows a plan of what
         is installed and what is missing, installs the missing items after you
         confirm, and then walks you through signing in. --dry-run only shows
-        the plan. --change asks again.
+        the plan. --change asks again. Builder asks about Docker Desktop;
+        --with docker-desktop takes it without asking.
 update  Upgrades the tools that do not update themselves, and the plugins.
 doctor  Checks everything without changing anything, including the sign-ins.
 EOF
