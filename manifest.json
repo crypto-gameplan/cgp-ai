@@ -191,6 +191,18 @@
       "name": "Blast Radius",
       "description": "Shows what a risky shell command would change and asks before it runs",
       "provider": "claude"
+    },
+    {
+      "id": "humanizer",
+      "name": "Humanizer",
+      "description": "Makes AI-written text read like a person wrote it",
+      "provider": "claude"
+    },
+    {
+      "id": "mattpocock-skills",
+      "name": "Matt Pocock's skills",
+      "description": "grill-me, writing-for-agents, TDD, research and more",
+      "provider": "claude"
     }
   ],
   "plugin_requires": [
@@ -210,7 +222,8 @@
       ],
       "plugins": [
         "cgp-essentials",
-        "blast-radius"
+        "blast-radius",
+        "humanizer"
       ]
     },
     {
@@ -232,7 +245,9 @@
         "cgp-essentials",
         "cgp-effort",
         "cgp-crew",
-        "blast-radius"
+        "blast-radius",
+        "humanizer",
+        "mattpocock-skills"
       ]
     }
   ]

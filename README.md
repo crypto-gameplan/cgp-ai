@@ -43,6 +43,8 @@ choice are installed. The Crypto Gameplan plugins are for Claude Code, so they c
 | Plugin CGP Effort | | yes |
 | Plugin CGP Crew | | yes |
 | Plugin Blast Radius | yes | yes |
+| Plugin Humanizer | yes | yes |
+| Plugin Matt Pocock's skills | | yes |
 
 Starter gives you the desktop apps and both AI command line tools, so `claude` and `codex` work in any terminal; you
 never have to open one if you do not want to. Builder adds what you need to build agents, scripts and your own
