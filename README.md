@@ -22,6 +22,11 @@ curl -fsSL https://raw.githubusercontent.com/crypto-gameplan/cgp-ai/main/install
 The installer downloads the latest release into `~/.cgp-ai/app`, adds the `cgp-ai` command to
 `~/.local/bin` and starts the setup. To see the plan without installing anything, run `cgp-ai setup --dry-run`.
 
+## Choose your AI
+
+The setup first asks which AI you work with: Claude, ChatGPT and Codex, or both. Only the apps and tools for your
+choice are installed. The Crypto Gameplan plugins are for Claude Code, so they come with Claude.
+
 ## Profiles
 
 | Tool | Starter | Builder |
@@ -46,14 +51,25 @@ Code installs plugins through it. Homebrew is installed first if it is missing.
 
 | Command | What it does |
 |---|---|
-| `cgp-ai setup` | Shows the plan and installs what is missing. The first run asks for a profile; later runs reuse it. `--change` asks again, `--profile starter\|builder\|custom` skips the question, `--dry-run` changes nothing, `--yes` skips the confirmation. |
+| `cgp-ai setup` | Shows the plan, installs what is missing and walks you through signing in. The first run asks for your AI and profile; later runs reuse them. `--change` asks again, `--ai claude\|openai\|both` and `--profile starter\|builder\|custom` skip the questions, `--dry-run` changes nothing, `--yes` skips the confirmation and the sign-ins. |
 | `cgp-ai update` | Upgrades the tools that do not update themselves and the plugins. Apps and the Claude Code CLI update themselves and are left alone. |
-| `cgp-ai doctor` | Checks everything without changing anything: missing tools, the same command installed twice, Docker not running, missing plugins. Each finding comes with a fix. |
+| `cgp-ai doctor` | Checks everything without changing anything: missing tools, the same command installed twice, sign-ins, Docker not started, missing plugins. Each finding comes with a fix. |
+
+## Signing in
+
+After installing, the setup goes through every app and tool that needs you: it starts the sign-in of the Claude Code
+and Codex command line tools, opens Claude Desktop, ChatGPT Desktop and Docker Desktop, and waits until you are done.
+It ends with **All set** only when everything is installed and signed in; otherwise it lists what is still open, and
+running `cgp-ai setup` again continues there.
+
+The command line tools and Docker are checked directly. The desktop apps cannot be checked from outside, so you confirm
+those yourself, and `doctor` marks them as confirmed.
 
 ## What it does and does not do
 
 - It installs only through Homebrew or the maker's own installer. Every source is listed in [manifest.json](manifest.json).
-- It never touches logins, API keys or wallets. You sign in to each app yourself.
+- It never touches logins, API keys or wallets. It opens the app or starts the tool's own sign-in, and you sign in
+  there yourself.
 - It sends nothing to Crypto Gameplan.
 - It asks for your Mac password only through Homebrew's own installer, and only when Homebrew is missing.
 - Tools you already installed another way are recognised and left as they are.

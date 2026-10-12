@@ -4,6 +4,16 @@
     "name": "crypto-gameplan",
     "repo": "crypto-gameplan/cgp-marketplace"
   },
+  "providers": [
+    {
+      "id": "claude",
+      "name": "Claude (Anthropic)"
+    },
+    {
+      "id": "openai",
+      "name": "ChatGPT and Codex (OpenAI)"
+    }
+  ],
   "tools": [
     {
       "id": "git",
@@ -27,6 +37,12 @@
         "method": "brew-cask",
         "package": "claude",
         "app": "Claude.app"
+      },
+      "provider": "claude",
+      "finish": {
+        "label": "Sign in to Claude Desktop",
+        "open": "Claude",
+        "how": "Open Claude Desktop and sign in with your Claude account."
       }
     },
     {
@@ -39,6 +55,12 @@
         "method": "brew-cask",
         "package": "chatgpt",
         "app": "ChatGPT.app"
+      },
+      "provider": "openai",
+      "finish": {
+        "label": "Sign in to ChatGPT Desktop",
+        "open": "ChatGPT",
+        "how": "Open ChatGPT Desktop and sign in with your ChatGPT account. Codex is inside the same app."
       }
     },
     {
@@ -55,6 +77,13 @@
         "install": "curl -fsSL https://claude.ai/install.sh | bash",
         "check": "claude --version",
         "conflicts_cask": "claude-code"
+      },
+      "provider": "claude",
+      "finish": {
+        "label": "Sign in to Claude Code CLI",
+        "check": "claude auth status 2>/dev/null | grep -q '\"loggedIn\": true'",
+        "command": "claude auth login",
+        "how": "Sign in with your Claude account; a browser window opens."
       }
     },
     {
@@ -70,6 +99,13 @@
         "method": "brew-cask",
         "package": "codex",
         "check": "codex --version"
+      },
+      "provider": "openai",
+      "finish": {
+        "label": "Sign in to Codex CLI",
+        "check": "codex login status >/dev/null 2>&1",
+        "command": "codex login",
+        "how": "Sign in with your ChatGPT account; a browser window opens."
       }
     },
     {
@@ -121,8 +157,13 @@
       "mac": {
         "method": "brew-cask",
         "package": "docker-desktop",
-        "app": "Docker.app",
-        "note": "Open Docker once from Applications and accept its terms before you use it."
+        "app": "Docker.app"
+      },
+      "finish": {
+        "label": "Start Docker Desktop once",
+        "check": "docker info >/dev/null 2>&1",
+        "open": "Docker",
+        "how": "Open Docker Desktop, accept its terms and wait until it says it is running."
       }
     }
   ],
@@ -130,12 +171,14 @@
     {
       "id": "cgp-essentials",
       "name": "CGP Essentials",
-      "description": "The skills Crypto Gameplan uses every day"
+      "description": "The skills Crypto Gameplan uses every day",
+      "provider": "claude"
     },
     {
       "id": "cgp-effort",
       "name": "CGP Effort",
-      "description": "Picks the reasoning effort for every prompt"
+      "description": "Picks the reasoning effort for every prompt",
+      "provider": "claude"
     }
   ],
   "plugin_requires": [

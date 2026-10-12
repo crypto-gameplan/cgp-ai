@@ -24,15 +24,22 @@ jobs:
       - uses: actions/checkout@v4
       - name: Keep the saved selection inside the runner's temp folder
         run: echo "CGP_AI_HOME=$RUNNER_TEMP/cgp-ai" >> "$GITHUB_ENV"
-      - name: Plan for both profiles
+      - name: Plan for each AI choice and profile
         run: |
-          bin/cgp-ai setup --profile starter --dry-run
-          bin/cgp-ai setup --profile builder --dry-run
+          for ai in claude openai both; do
+            bin/cgp-ai setup --ai "$ai" --profile starter --dry-run
+          done
+          bin/cgp-ai setup --ai both --profile builder --dry-run
       - name: Doctor without a selection reports it and fails
         run: |
           if bin/cgp-ai doctor; then echo "doctor should fail without a selection"; exit 1; fi
       - name: Install the starter profile
         if: ${{ inputs.full_install }}
         run: |
-          bin/cgp-ai setup --profile starter --yes
-          bin/cgp-ai doctor
+          # Nobody can sign in on a CI runner, so setup ends with the sign-ins
+          # still open and exits 1. Only missing installations count here.
+          bin/cgp-ai setup --ai both --profile starter --yes | tee setup.log || true
+          grep -q "Not finished yet" setup.log
+          bin/cgp-ai doctor | tee doctor.log || true
+          if grep -E "is missing|not installed" doctor.log; then exit 1; fi
+          grep -q "Sign in to Claude Code CLI: still open" doctor.log

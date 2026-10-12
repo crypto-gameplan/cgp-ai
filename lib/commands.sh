@@ -4,18 +4,25 @@ require_macos() {
   [ "$(uname -s)" = "Darwin" ] || die "This version of cgp-ai runs on macOS. Windows follows."
 }
 
-_tool_line() { printf '%s' "$(tool "$1" name)"; }
-
 _note_reason() {
   # Why a tool is in the plan although the person did not pick it.
   in_list "$1" "$SEL_TOOLS" && return
   printf ' (needed by your selection)'
 }
 
+_provider_label() {
+  case $SEL_PROVIDER in
+    claude) printf 'Claude' ;;
+    openai) printf 'ChatGPT and Codex' ;;
+    *)      printf 'Claude, ChatGPT and Codex' ;;
+  esac
+}
+
 # ---------------------------------------------------------------- setup
 
 cmd_setup() {
-  local dry=0 change=0 want_profile="" id v missing_tools="" missing_plugins="" failed="" need_brew=0 need_market=0
+  local dry=0 change=0 want_profile="" want_provider="" id v
+  local missing_tools="" missing_plugins="" failed="" need_brew=0 need_market=0 open_items
   while [ $# -gt 0 ]; do
     case $1 in
       --dry-run) dry=1 ;;
@@ -23,6 +30,8 @@ cmd_setup() {
       --yes|-y)  export CGP_ASSUME_YES=1 ;;
       --profile) shift; want_profile=${1:-} ;;
       --profile=*) want_profile=${1#--profile=} ;;
+      --ai) shift; want_provider=${1:-} ;;
+      --ai=*) want_provider=${1#--ai=} ;;
       *) die "Unknown option '$1'. See: cgp-ai help" ;;
     esac
     shift
@@ -32,24 +41,29 @@ cmd_setup() {
   env_init
   heading "cgp-ai $(cgp_version) on macOS $(sw_vers -productVersion) ($(uname -m))"
 
-  if [ -n "$want_profile" ]; then
-    if [ "$want_profile" = "custom" ]; then sel_custom; else sel_from_profile "$want_profile"; fi
-  elif sel_exists && [ "$change" = "0" ]; then
+  # Selection: saved, from options, or asked
+  if [ -z "$want_profile$want_provider" ] && sel_exists && [ "$change" = "0" ]; then
     sel_load
-    say "Using your saved selection ($SEL_PROFILE). Run 'cgp-ai setup --change' to choose again."
+    say "Using your saved selection: $(_provider_label), profile $SEL_PROFILE. Run 'cgp-ai setup --change' to choose again."
   else
-    sel_interactive
+    sel_exists && { sel_load; SEL_TOOLS=""; SEL_PLUGINS=""; }   # keeps sign-ins you confirmed
+    if [ -n "$want_provider" ]; then sel_set_provider "$want_provider"
+    elif [ -n "$want_profile" ]; then SEL_PROVIDER=both
+    else sel_ask_provider; fi
+    if [ "$want_profile" = "custom" ]; then sel_custom
+    elif [ -n "$want_profile" ]; then sel_from_profile "$want_profile"
+    else sel_ask_profile; fi
   fi
   sel_resolve
 
   # Plan
-  heading "Plan"
+  heading "Plan for $(_provider_label)"
   has_brew || { need_brew=1; todo "Homebrew: will be installed (needed for everything else)"; }
   for id in $RESOLVED_TOOLS; do
     if tool_present "$id"; then
-      v=$(tool_version "$id"); ok "$(_tool_line "$id")${v:+ $v}"
+      v=$(tool_version "$id"); ok "$(tool "$id" name)${v:+ $v}"
     else
-      todo "$(_tool_line "$id"): will be installed via $(tool_route "$id")$(_note_reason "$id")"
+      todo "$(tool "$id" name): will be installed via $(tool_route "$id")$(_note_reason "$id")"
       missing_tools=$(add_line "$missing_tools" "$id")
     fi
   done
@@ -71,63 +85,75 @@ cmd_setup() {
       fi
     done
   fi
-  for id in $missing_tools; do
-    v=$(tool "$id" mac.note); [ -n "$v" ] && hint "$(tool "$id" name): $v"
-  done
+  hint "Afterwards cgp-ai walks you through signing in to each app and tool."
 
   if [ "$dry" = "1" ]; then
     say ""; say "Dry run: nothing was changed."; return 0
   fi
-  if [ "$need_brew$need_market" = "00" ] && [ -z "$missing_tools$missing_plugins" ]; then
-    sel_save; say ""; say "Everything is set up. Run 'cgp-ai update' now and then to stay current."; return 0
-  fi
-  say ""
-  ask_yn "Install the items marked +?" y || { say "Nothing was changed."; return 0; }
 
   # Install
-  if [ "$need_brew" = "1" ]; then
-    heading "Installing Homebrew"
-    install_homebrew || die "Homebrew could not be installed. Nothing else was changed."
-  fi
-  for id in $missing_tools; do
-    heading "Installing $(tool "$id" name)"
-    if tool_install "$id" && { env_init; tool_present "$id"; }; then ok "$(tool "$id" name) installed"
-    else fail "$(tool "$id" name) could not be installed"; failed=$(add_line "$failed" "$(tool "$id" name)"); fi
-  done
-  if [ -n "$SEL_PLUGINS" ]; then
-    if ! has_claude; then
-      fail "Claude Code CLI is missing, so the plugins could not be installed"
-      failed=$(add_line "$failed" "Plugins")
-    else
-      if [ "$need_market" = "1" ]; then
-        heading "Adding the Crypto Gameplan marketplace"
-        marketplace_add || failed=$(add_line "$failed" "Marketplace")
+  if [ "$need_brew$need_market" != "00" ] || [ -n "$missing_tools$missing_plugins" ]; then
+    say ""
+    ask_yn "Install the items marked +?" y || { say "Nothing was changed."; return 0; }
+    if [ "$need_brew" = "1" ]; then
+      heading "Installing Homebrew"
+      install_homebrew || die "Homebrew could not be installed. Nothing else was changed."
+    fi
+    for id in $missing_tools; do
+      heading "Installing $(tool "$id" name)"
+      if tool_install "$id" && { env_init; tool_present "$id"; }; then ok "$(tool "$id" name) installed"
+      else fail "$(tool "$id" name) could not be installed"; failed=$(add_line "$failed" "$(tool "$id" name)"); fi
+    done
+    if [ -n "$SEL_PLUGINS" ]; then
+      if ! has_claude; then
+        fail "Claude Code CLI is missing, so the plugins could not be installed"
+        failed=$(add_line "$failed" "Plugins")
+      else
+        if [ "$need_market" = "1" ]; then
+          heading "Adding the Crypto Gameplan marketplace"
+          marketplace_add || failed=$(add_line "$failed" "Marketplace")
+        fi
+        for id in $missing_plugins; do
+          heading "Installing plugin $(plugin "$id" name)"
+          plugin_install "$id" || failed=$(add_line "$failed" "Plugin $(plugin "$id" name)")
+        done
       fi
-      for id in $missing_plugins; do
-        heading "Installing plugin $(plugin "$id" name)"
-        plugin_install "$id" || failed=$(add_line "$failed" "Plugin $(plugin "$id" name)")
-      done
     fi
   fi
   sel_save
 
-  # Summary
-  heading "Done"
-  if [ -n "$failed" ]; then
-    printf '%s\n' "$failed" | while IFS= read -r v; do fail "$v"; done
-    hint "Run 'cgp-ai doctor' for details, or post its output in the CGP AI Lab."
-  else
-    ok "Everything on your list is installed."
+  # Sign-ins and first starts
+  open_items=$(finish_open)
+  if [ -n "$open_items" ] && interactive; then
+    heading "Signing in"
+    say "  cgp-ai opens each app or starts each sign-in. You sign in yourself; cgp-ai never sees your login."
+    for id in $open_items; do finish_run "$id"; done
+    sel_save
   fi
-  say ""
-  say "Next steps:"
-  say "  - Open a new terminal window so the new commands are found."
+
+  # Status
+  heading "Status"
   for id in $RESOLVED_TOOLS; do
-    case $(tool "$id" kind) in app) say "  - Open $(tool "$id" name) and sign in." ;; esac
+    if ! tool_present "$id"; then fail "$(tool "$id" name): not installed"
+    elif has_finish "$id"; then finish_line "$id"
+    else ok "$(tool "$id" name)"; fi
   done
-  in_list claude-code "$RESOLVED_TOOLS" && say "  - Run 'claude' once in a terminal and sign in."
-  [ -n "$SEL_PLUGINS" ] && say "  - In Claude Code, run /reload-plugins or restart it to load the plugins."
-  [ -z "$failed" ]
+  for id in $SEL_PLUGINS; do
+    if plugin_present "$id"; then ok "Plugin $(plugin "$id" name)"; else fail "Plugin $(plugin "$id" name): not installed"; fi
+  done
+
+  open_items=$(finish_open)
+  say ""
+  if [ -z "$failed" ] && [ -z "$open_items" ]; then
+    printf '%s✓ All set.%s Everything is installed and signed in. You can start working.\n' "$C_GREEN$C_BOLD" "$C_RESET"
+    say "  Open a new terminal window so the new commands are found."
+    [ -n "$SEL_PLUGINS" ] && say "  If Claude Code was already open, run /reload-plugins in it."
+    return 0
+  fi
+  printf '%sNot finished yet.%s The items marked ✗ above still need you.\n' "$C_YELLOW$C_BOLD" "$C_RESET"
+  say "  Run 'cgp-ai setup' again to continue, or 'cgp-ai doctor' to check everything."
+  [ -n "$failed" ] && say "  If an installation keeps failing, post the output of 'cgp-ai doctor' in the CGP AI Lab."
+  return 1
 }
 
 # ---------------------------------------------------------------- update
@@ -184,7 +210,7 @@ cmd_update() {
 # ---------------------------------------------------------------- doctor
 
 cmd_doctor() {
-  local id problems=0 paths n
+  local id problems=0 paths n v
   require_macos
   env_init
   heading "cgp-ai doctor"
@@ -197,11 +223,11 @@ cmd_doctor() {
   elif has_brew; then warn "New terminals may not find Homebrew"; hint "Fix: echo 'eval \"\$($BREW_PREFIX/bin/brew shellenv)\"' >> ~/.zprofile"; fi
 
   if ! sel_exists; then
-    warn "No saved selection. Run 'cgp-ai setup' to choose a profile."
+    warn "No saved selection. Run 'cgp-ai setup' to choose your AI and profile."
     say ""; return 1
   fi
   sel_load; sel_resolve
-  ok "Selection: $SEL_PROFILE"
+  ok "Selection: $(_provider_label), profile $SEL_PROFILE"
 
   heading "Tools"
   for id in $RESOLVED_TOOLS; do
@@ -224,10 +250,16 @@ cmd_doctor() {
     hint "Fix: brew uninstall --cask $(tool claude-code mac.conflicts_cask)"
   fi
 
-  if in_list docker-desktop "$RESOLVED_TOOLS" && tool_present docker-desktop; then
-    if docker info >/dev/null 2>&1; then ok "Docker is running"
-    else warn "Docker is installed but not running"; hint "Open Docker from Applications"; fi
-  fi
+  heading "Sign-ins and first starts"
+  for id in $RESOLVED_TOOLS; do
+    if ! tool_present "$id" || ! has_finish "$id"; then continue; fi
+    finish_line "$id"
+    if [ "$(finish_state "$id")" = "open" ]; then
+      problems=$((problems + 1))
+      v=$(tool "$id" finish.command)
+      if [ -n "$v" ]; then hint "Fix: $v"; else hint "Fix: cgp-ai setup"; fi
+    fi
+  done
 
   if [ -n "$SEL_PLUGINS" ]; then
     heading "Claude Code plugins"
@@ -247,6 +279,7 @@ cmd_doctor() {
   fi
 
   say ""
-  if [ "$problems" = "0" ]; then say "No problems found."; else say "$problems problem(s) found."; fi
+  if [ "$problems" = "0" ]; then printf '%s✓ All set.%s No problems found.\n' "$C_GREEN$C_BOLD" "$C_RESET"
+  else say "$problems problem(s) found."; fi
   [ "$problems" = "0" ]
 }

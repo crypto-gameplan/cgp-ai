@@ -26,6 +26,8 @@ export CGP_HOME CGP_ASSUME_YES=${CGP_ASSUME_YES:-0}
 . "$ROOT/lib/plugins.sh"
 # shellcheck source=../lib/selection.sh
 . "$ROOT/lib/selection.sh"
+# shellcheck source=../lib/finish.sh
+. "$ROOT/lib/finish.sh"
 # shellcheck source=../lib/commands.sh
 . "$ROOT/lib/commands.sh"
 
@@ -36,16 +38,17 @@ usage() {
 cgp-ai $(cgp_version): your AI work environment, set up and kept current.
 
 Usage:
-  cgp-ai setup [--profile starter|builder|custom] [--change] [--dry-run] [--yes]
+  cgp-ai setup [--ai claude|openai|both] [--profile starter|builder|custom] [--change] [--dry-run] [--yes]
   cgp-ai update [--yes]
   cgp-ai doctor
   cgp-ai version
 
-setup   Shows a plan of what is installed and what is missing, then installs
-        the missing items after you confirm. --dry-run only shows the plan.
-        --change asks for the profile again.
+setup   Asks which AI you use and which profile you want, shows a plan of what
+        is installed and what is missing, installs the missing items after you
+        confirm, and then walks you through signing in. --dry-run only shows
+        the plan. --change asks again.
 update  Upgrades the tools that do not update themselves, and the plugins.
-doctor  Checks everything without changing anything.
+doctor  Checks everything without changing anything, including the sign-ins.
 EOF
 }
 
