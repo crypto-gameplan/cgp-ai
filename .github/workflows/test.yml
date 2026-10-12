@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      full_install:
+        description: "Also install the starter profile for real on the runner"
+        type: boolean
+        default: false
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck -s bash -x -P SCRIPTDIR bin/cgp-ai lib/*.sh install.sh
+
+  macos:
+    runs-on: macos-latest
+    env:
+      CGP_AI_HOME: ${{ runner.temp }}/cgp-ai
+    steps:
+      - uses: actions/checkout@v4
+      - name: Plan for both profiles
+        run: |
+          bin/cgp-ai setup --profile starter --dry-run
+          bin/cgp-ai setup --profile builder --dry-run
+      - name: Doctor without a selection reports it and fails
+        run: |
+          if bin/cgp-ai doctor; then echo "doctor should fail without a selection"; exit 1; fi
+      - name: Install the starter profile
+        if: ${{ inputs.full_install }}
+        run: |
+          bin/cgp-ai setup --profile starter --yes
+          bin/cgp-ai doctor

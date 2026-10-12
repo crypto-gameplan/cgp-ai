@@ -1,0 +1,63 @@
+#!/bin/bash
+# cgp-ai: sets up an AI work environment on a Mac from manifest.json.
+# Written for the bash that ships with macOS (3.2).
+set -u
+
+# Find the install folder, also when started through a symlink.
+src=$0
+while [ -L "$src" ]; do
+  dir=$(cd -P "$(dirname "$src")" && pwd)
+  src=$(readlink "$src")
+  case $src in /*) ;; *) src="$dir/$src" ;; esac
+done
+ROOT=$(cd -P "$(dirname "$src")/.." && pwd)
+
+MANIFEST="$ROOT/manifest.json"
+CGP_HOME=${CGP_AI_HOME:-$HOME/.cgp-ai}
+export CGP_HOME CGP_ASSUME_YES=${CGP_ASSUME_YES:-0}
+
+# shellcheck source=../lib/ui.sh
+. "$ROOT/lib/ui.sh"
+# shellcheck source=../lib/manifest.sh
+. "$ROOT/lib/manifest.sh"
+# shellcheck source=../lib/tools.sh
+. "$ROOT/lib/tools.sh"
+# shellcheck source=../lib/plugins.sh
+. "$ROOT/lib/plugins.sh"
+# shellcheck source=../lib/selection.sh
+. "$ROOT/lib/selection.sh"
+# shellcheck source=../lib/commands.sh
+. "$ROOT/lib/commands.sh"
+
+cgp_version() { cat "$ROOT/VERSION" 2>/dev/null || printf 'dev'; }
+
+usage() {
+  cat <<EOF
+cgp-ai $(cgp_version): your AI work environment, set up and kept current.
+
+Usage:
+  cgp-ai setup [--profile starter|builder|custom] [--change] [--dry-run] [--yes]
+  cgp-ai update [--yes]
+  cgp-ai doctor
+  cgp-ai version
+
+setup   Shows a plan of what is installed and what is missing, then installs
+        the missing items after you confirm. --dry-run only shows the plan.
+        --change asks for the profile again.
+update  Upgrades the tools that do not update themselves, and the plugins.
+doctor  Checks everything without changing anything.
+EOF
+}
+
+[ -f "$MANIFEST" ] || die "manifest.json not found next to cgp-ai ($ROOT)."
+
+cmd=${1:-help}
+[ $# -gt 0 ] && shift
+case $cmd in
+  setup)   cmd_setup "$@" ;;
+  update)  cmd_update "$@" ;;
+  doctor)  cmd_doctor "$@" ;;
+  version|--version|-v) cgp_version; echo ;;
+  help|--help|-h) usage ;;
+  *) usage; exit 1 ;;
+esac

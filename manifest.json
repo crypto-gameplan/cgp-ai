@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "marketplace": {
+    "name": "crypto-gameplan",
+    "repo": "crypto-gameplan/cgp-marketplace"
+  },
+  "tools": [
+    {
+      "id": "git",
+      "name": "Git",
+      "description": "Version control; Claude Code and Codex need it",
+      "kind": "cli",
+      "self_updates": false,
+      "mac": {
+        "method": "brew",
+        "package": "git",
+        "check": "xcode-select -p >/dev/null 2>&1 && git --version"
+      }
+    },
+    {
+      "id": "claude-desktop",
+      "name": "Claude Desktop",
+      "description": "Claude as a desktop app, with chat, Cowork and Code",
+      "kind": "app",
+      "self_updates": true,
+      "mac": {
+        "method": "brew-cask",
+        "package": "claude",
+        "app": "Claude.app"
+      }
+    },
+    {
+      "id": "codex-app",
+      "name": "Codex App",
+      "description": "OpenAI Codex as a desktop app",
+      "kind": "app",
+      "self_updates": true,
+      "mac": {
+        "method": "brew-cask",
+        "package": "codex-app",
+        "app": "Codex.app"
+      }
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code CLI",
+      "description": "Claude in the terminal, for projects and agents",
+      "kind": "cli",
+      "self_updates": true,
+      "requires": [
+        "git"
+      ],
+      "mac": {
+        "method": "vendor",
+        "install": "curl -fsSL https://claude.ai/install.sh | bash",
+        "check": "claude --version",
+        "conflicts_cask": "claude-code"
+      }
+    },
+    {
+      "id": "codex-cli",
+      "name": "Codex CLI",
+      "description": "OpenAI Codex in the terminal",
+      "kind": "cli",
+      "self_updates": false,
+      "requires": [
+        "git"
+      ],
+      "mac": {
+        "method": "brew-cask",
+        "package": "codex",
+        "check": "codex --version"
+      }
+    },
+    {
+      "id": "node",
+      "name": "Node.js",
+      "description": "JavaScript runtime for scripts, MCP servers and many AI tools",
+      "kind": "runtime",
+      "self_updates": false,
+      "mac": {
+        "method": "brew",
+        "package": "node",
+        "check": "node --version"
+      }
+    },
+    {
+      "id": "uv",
+      "name": "uv",
+      "description": "Manages Python versions and packages",
+      "kind": "runtime",
+      "self_updates": false,
+      "mac": {
+        "method": "brew",
+        "package": "uv",
+        "check": "uv --version"
+      }
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "description": "Python, installed and kept separate from the system Python by uv",
+      "kind": "runtime",
+      "self_updates": false,
+      "requires": [
+        "uv"
+      ],
+      "mac": {
+        "method": "vendor",
+        "install": "uv python install",
+        "upgrade": "uv python upgrade",
+        "check": "\"$(uv python find)\" --version"
+      }
+    },
+    {
+      "id": "docker-desktop",
+      "name": "Docker Desktop",
+      "description": "Runs containers; free for personal use and small businesses",
+      "kind": "app",
+      "self_updates": true,
+      "mac": {
+        "method": "brew-cask",
+        "package": "docker-desktop",
+        "app": "Docker.app",
+        "note": "Open Docker once from Applications and accept its terms before you use it."
+      }
+    }
+  ],
+  "plugins": [
+    {
+      "id": "cgp-essentials",
+      "name": "CGP Essentials",
+      "description": "The skills Crypto Gameplan uses every day"
+    },
+    {
+      "id": "cgp-effort",
+      "name": "CGP Effort",
+      "description": "Picks the reasoning effort for every prompt"
+    }
+  ],
+  "plugin_requires": [
+    "claude-code"
+  ],
+  "profiles": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "Work with AI in desktop apps, no terminal needed",
+      "tools": [
+        "git",
+        "claude-desktop",
+        "codex-app"
+      ],
+      "plugins": [
+        "cgp-essentials"
+      ]
+    },
+    {
+      "id": "builder",
+      "name": "Builder",
+      "description": "Build agents, scripts and your own projects",
+      "tools": [
+        "git",
+        "claude-desktop",
+        "codex-app",
+        "claude-code",
+        "codex-cli",
+        "node",
+        "uv",
+        "python",
+        "docker-desktop"
+      ],
+      "plugins": [
+        "cgp-essentials",
+        "cgp-effort"
+      ]
+    }
+  ]
+}
