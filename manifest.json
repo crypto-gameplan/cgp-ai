@@ -179,6 +179,12 @@
       "name": "CGP Effort",
       "description": "Picks the reasoning effort for every prompt",
       "provider": "claude"
+    },
+    {
+      "id": "blast-radius",
+      "name": "Blast Radius",
+      "description": "Shows what a risky shell command would change and asks before it runs",
+      "provider": "claude"
     }
   ],
   "plugin_requires": [
@@ -197,7 +203,8 @@
         "codex-cli"
       ],
       "plugins": [
-        "cgp-essentials"
+        "cgp-essentials",
+        "blast-radius"
       ]
     },
     {
@@ -217,7 +224,8 @@
       ],
       "plugins": [
         "cgp-essentials",
-        "cgp-effort"
+        "cgp-effort",
+        "blast-radius"
       ]
     }
   ]
