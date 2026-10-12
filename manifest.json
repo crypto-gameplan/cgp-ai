@@ -171,7 +171,7 @@
     {
       "id": "cgp-essentials",
       "name": "CGP Essentials",
-      "description": "Everyday skills: cgp-humanizer, cgp-writing-for-agents, cgp-grill-me, cgp-tdd, cgp-research, cgp-codebase-design, cgp-code-review",
+      "description": "Everyday skills: cgp-knowledge, cgp-challenge, cgp-natural-writing, cgp-agent-docs, cgp-research, cgp-test-first, cgp-architecture, cgp-review",
       "provider": "claude"
     },
     {
