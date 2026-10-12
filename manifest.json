@@ -145,11 +145,13 @@
     {
       "id": "starter",
       "name": "Starter",
-      "description": "Work with AI in desktop apps, no terminal needed",
+      "description": "Desktop apps plus both AI command line tools, no setup knowledge needed",
       "tools": [
         "git",
         "claude-desktop",
-        "chatgpt-desktop"
+        "chatgpt-desktop",
+        "claude-code",
+        "codex-cli"
       ],
       "plugins": [
         "cgp-essentials"

@@ -29,17 +29,18 @@ The installer downloads the latest release into `~/.cgp-ai/app`, adds the `cgp-a
 | Git | yes | yes |
 | Claude Desktop | yes | yes |
 | ChatGPT Desktop (with Codex) | yes | yes |
-| Claude Code CLI | for the plugins | yes |
-| Codex CLI | | yes |
+| Claude Code CLI | yes | yes |
+| Codex CLI | yes | yes |
 | Node.js | | yes |
 | uv and Python | | yes |
 | Docker Desktop | | yes |
 | Plugin CGP Essentials | yes | yes |
 | Plugin CGP Effort | | yes |
 
-Starter is for working with AI in the desktop apps. Builder is for agents, scripts and your own projects. Custom
-asks about each item. The Claude Code CLI comes with every profile that has plugins, because Claude Code installs
-plugins through it. Homebrew is installed first if it is missing.
+Starter gives you the desktop apps and both AI command line tools, so `claude` and `codex` work in any terminal; you
+never have to open one if you do not want to. Builder adds what you need to build agents, scripts and your own
+projects. Custom asks about each item. The Claude Code CLI is always installed when you choose plugins, because Claude
+Code installs plugins through it. Homebrew is installed first if it is missing.
 
 ## Commands
 
