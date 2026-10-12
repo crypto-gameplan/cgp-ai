@@ -171,7 +171,7 @@
     {
       "id": "cgp-essentials",
       "name": "CGP Essentials",
-      "description": "The skills Crypto Gameplan uses every day",
+      "description": "Everyday skills: humanizer, writing-for-agents, grill-me, tdd, research",
       "provider": "claude"
     },
     {
@@ -190,18 +190,6 @@
       "id": "blast-radius",
       "name": "Blast Radius",
       "description": "Shows what a risky shell command would change and asks before it runs",
-      "provider": "claude"
-    },
-    {
-      "id": "humanizer",
-      "name": "Humanizer",
-      "description": "Makes AI-written text read like a person wrote it",
-      "provider": "claude"
-    },
-    {
-      "id": "mattpocock-skills",
-      "name": "Matt Pocock's skills",
-      "description": "grill-me, writing-for-agents, TDD, research and more",
       "provider": "claude"
     }
   ],
@@ -222,8 +210,7 @@
       ],
       "plugins": [
         "cgp-essentials",
-        "blast-radius",
-        "humanizer"
+        "blast-radius"
       ]
     },
     {
@@ -245,9 +232,7 @@
         "cgp-essentials",
         "cgp-effort",
         "cgp-crew",
-        "blast-radius",
-        "humanizer",
-        "mattpocock-skills"
+        "blast-radius"
       ]
     }
   ]
