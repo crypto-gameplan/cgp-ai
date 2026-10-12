@@ -181,6 +181,12 @@
       "provider": "claude"
     },
     {
+      "id": "cgp-crew",
+      "name": "CGP Crew",
+      "description": "Lets your Claude Code session lead a crew of worker agents through a coding job",
+      "provider": "claude"
+    },
+    {
       "id": "blast-radius",
       "name": "Blast Radius",
       "description": "Shows what a risky shell command would change and asks before it runs",
@@ -225,6 +231,7 @@
       "plugins": [
         "cgp-essentials",
         "cgp-effort",
+        "cgp-crew",
         "blast-radius"
       ]
     }
